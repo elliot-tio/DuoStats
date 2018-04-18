@@ -1,0 +1,20 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+  <style>
+  .list-group{
+      display:inline-block;
+   }
+  </style>
+  <div class="jumbotron text-center">
+    <h1>LoL Duo Stats!</h1>
+    <p class="lead">Enter you and your buddy's summoner names and find out how good you play together!</p>
+  </div>
+  <div class="container text-center">
+      <div class="list-group">
+        <a class="list-group-item list-group-item-success" href="/request_transfer">Make a Transfer Request</a>
+        <a class="list-group-item list-group-item-primary" href="/dashboard">Dashboard</a>
+        <a class="list-group-item list-group-item-warning" href="/logout">Logout</a>
+      </div>
+  </div>
+{% endblock %}
