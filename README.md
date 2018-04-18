@@ -16,5 +16,8 @@ while in directory containing files. It should run on your localhost!
 
 You will need Python installed in your computer. I used Python v 3.6 available at https://www.python.org/downloads/
 
+## Built With
+* [Flask](http://flask.pocoo.org/docs/0.12/) - Python microframework
+
 ## Authors
-Elliot Tio
+* **Elliot Tio**
