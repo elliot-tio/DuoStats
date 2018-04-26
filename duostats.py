@@ -2,9 +2,10 @@ from flask import Flask, render_template, flash, redirect, url_for, session, log
 from wtforms import Form, StringField, SelectField, validators
 import regex
 import requests
+import sys
 
 app = Flask(__name__)
-apikey = 'RGAPI-4adc007b-875a-4604-bfbf-001b85c8ff16'
+apikey = 'RGAPI-95a436c5-4aae-4486-a5ec-8956be25d875'
 
 
 class SummonerForm(Form):   # SummonerForm class
@@ -22,7 +23,17 @@ class SummonerForm(Form):   # SummonerForm class
 
 def requestSummonerInfo(region, summonerName):
     URL = 'https://' + region + '.api.riotgames.com/lol/summoner/v3/summoners/by-name/' + \
-        summonerName + "?api_key=" + apikey
+        summonerName + '?api_key=' + apikey
+
+    response = requests.get(URL)
+    return response.json()
+
+
+def requestRecentGames(region, summonerId):
+    URL = 'https://' + region + '.api.riotgames.com/lol/match/v3/matchlists/by-account/' + \
+        summonerId + '/recent?api_key=' + apikey
+
+    print('Hello world!', file=sys.stderr)
 
     response = requests.get(URL)
     return response.json()
@@ -32,18 +43,29 @@ def requestSummonerInfo(region, summonerName):
 def index():
     form = SummonerForm(request.form)
     if request.method == 'POST' and form.validate():
-        summoner_1 = form.summoner_1.data
-        summoner_2 = form.summoner_2.data
+        name1 = form.summoner_1.data
+        name2 = form.summoner_2.data
         region_1 = form.region_1.data
         region_2 = form.region_2.data
+        results = []
+        endIndex = 10
 
-        # Grab JSON object here
+        # Grab JSON objects here
         try:
-            summ1ID = requestSummonerInfo(region_1, summoner_1)['accountId']
+            summ1ID = requestSummonerInfo(region_1, name1)['accountId']
+            recentGames = requestRecentGames(region_1, summ1ID)
+            results.append(recentGames)
+            for key in recentGames.items():
+                results.append(key)
         except Exception as e:
-            summ1ID = "Could not find ID of " + summoner_1 + " in " + region_1
+            summ1ID = "Could not find ID of " + name1 + " in " + region_1
 
-        return render_template('results.html', form=form, summ1=summ1ID, summ2=summoner_2)
+        try:
+            summ2ID = requestSummonerInfo(region_2, name2)['accountId']
+        except Exception as e:
+            summ2ID = "Could not find ID of " + name2 + " in " + region_2
+
+        return render_template('results.html', form=form, name1=name1, name2=name2, results=results)
     return render_template('index.html', form=form)
 
 
